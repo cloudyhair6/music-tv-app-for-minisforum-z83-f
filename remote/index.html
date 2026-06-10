@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>MiniPC Remote</title>
+<style>
+/* Reset - compatible with Android 2.3 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+    width: 100%;
+    height: 100%;
+    background: #0a0e1a;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+/* Header */
+.header {
+    text-align: center;
+    padding: 12px 0 8px 0;
+    background: rgba(20, 25, 45, 0.95);
+    border-bottom: 1px solid rgba(30, 42, 74, 0.6);
+}
+.header h1 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #00d4ff;
+    letter-spacing: 1px;
+}
+.header .status {
+    font-size: 11px;
+    color: #8892b0;
+    margin-top: 2px;
+}
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: #00e676;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+.status-dot.offline { background: #ff5252; }
+
+/* Main content */
+.main {
+    display: block;
+    width: 100%;
+    height: calc(100% - 52px);
+    text-align: center;
+    padding: 8px;
+}
+
+/* Top row: Home + Back */
+.top-row {
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 0 10px;
+}
+.top-row .btn {
+    display: inline-block;
+    width: 45%;
+    margin: 0 2%;
+}
+
+/* D-Pad */
+.dpad {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    margin: 8px auto;
+}
+.dpad .btn {
+    position: absolute;
+    width: 76px;
+    height: 76px;
+    border-radius: 12px;
+}
+.dpad .btn-up    { top: 0; left: 82px; }
+.dpad .btn-down  { bottom: 0; left: 82px; }
+.dpad .btn-left  { top: 82px; left: 0; }
+.dpad .btn-right { top: 82px; right: 0; }
+.dpad .btn-ok    { top: 72px; left: 72px; width: 96px; height: 96px; border-radius: 50%; }
+
+/* Volume row */
+.vol-row {
+    text-align: center;
+    margin-top: 10px;
+    padding: 0 10px;
+}
+.vol-row .btn {
+    display: inline-block;
+    width: 42%;
+    margin: 0 3%;
+}
+
+/* Play/Pause + Mute row */
+.media-row {
+    text-align: center;
+    margin-top: 10px;
+    padding: 0 10px;
+}
+.media-row .btn {
+    display: inline-block;
+    width: 42%;
+    margin: 0 3%;
+}
+
+/* Button styling */
+.btn {
+    background: #1a1f36;
+    border: 2px solid rgba(30, 42, 74, 0.6);
+    border-radius: 14px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 14px 0;
+    cursor: pointer;
+    text-align: center;
+    -webkit-appearance: none;
+    outline: none;
+}
+.btn:active, .btn.active {
+    background: #00d4ff;
+    color: #0a0e1a;
+    border-color: #00d4ff;
+}
+.btn-accent {
+    border-color: rgba(0, 212, 255, 0.4);
+}
+.btn-ok {
+    background: rgba(0, 212, 255, 0.15);
+    border-color: #00d4ff;
+    font-size: 20px;
+}
+.btn-ok:active {
+    background: #00d4ff;
+}
+.btn .icon {
+    font-size: 28px;
+    line-height: 1;
+}
+.btn .label {
+    font-size: 11px;
+    color: #8892b0;
+    margin-top: 2px;
+}
+.btn:active .label { color: #0a0e1a; }
+
+/* Feedback overlay */
+.feedback {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    height: 120px;
+    margin-left: -60px;
+    margin-top: -60px;
+    background: rgba(0, 212, 255, 0.9);
+    color: #0a0e1a;
+    font-size: 48px;
+    line-height: 120px;
+    text-align: center;
+    border-radius: 24px;
+    z-index: 100;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>MiniPC Remote</h1>
+    <div class="status"><span class="status-dot" id="statusDot"></span><span id="statusText">Connecting...</span></div>
+</div>
+
+<div class="main">
+    <!-- Home / Back -->
+    <div class="top-row">
+        <div class="btn btn-accent" ontouchstart="send('home',this)" onmousedown="send('home',this)">
+            <div class="icon">&#x1F3E0;</div>
+            <div class="label">Home</div>
+        </div>
+        <div class="btn btn-accent" ontouchstart="send('back',this)" onmousedown="send('back',this)">
+            <div class="icon">&#x2190;</div>
+            <div class="label">Back</div>
+        </div>
+    </div>
+
+    <!-- D-Pad -->
+    <div class="dpad">
+        <div class="btn btn-up" ontouchstart="send('up',this)" onmousedown="send('up',this)">
+            <div class="icon">&#x25B2;</div>
+        </div>
+        <div class="btn btn-left" ontouchstart="send('left',this)" onmousedown="send('left',this)">
+            <div class="icon">&#x25C0;</div>
+        </div>
+        <div class="btn btn-ok" ontouchstart="send('select',this)" onmousedown="send('select',this)">
+            OK
+        </div>
+        <div class="btn btn-right" ontouchstart="send('right',this)" onmousedown="send('right',this)">
+            <div class="icon">&#x25B6;</div>
+        </div>
+        <div class="btn btn-down" ontouchstart="send('down',this)" onmousedown="send('down',this)">
+            <div class="icon">&#x25BC;</div>
+        </div>
+    </div>
+
+    <!-- Volume -->
+    <div class="vol-row">
+        <div class="btn" ontouchstart="send('volume_down',this)" onmousedown="send('volume_down',this)">
+            <div class="icon">&#x1F509;</div>
+            <div class="label">Vol -</div>
+        </div>
+        <div class="btn" ontouchstart="send('volume_up',this)" onmousedown="send('volume_up',this)">
+            <div class="icon">&#x1F50A;</div>
+            <div class="label">Vol +</div>
+        </div>
+    </div>
+
+    <!-- Play/Pause + Mute -->
+    <div class="media-row">
+        <div class="btn btn-accent" ontouchstart="send('play_pause',this)" onmousedown="send('play_pause',this)">
+            <div class="icon">&#x23EF;</div>
+            <div class="label">Play/Pause</div>
+        </div>
+        <div class="btn" ontouchstart="send('mute',this)" onmousedown="send('mute',this)">
+            <div class="icon">&#x1F507;</div>
+            <div class="label">Mute</div>
+        </div>
+    </div>
+</div>
+
+<div class="feedback" id="feedback"></div>
+
+<script>
+// Compatible with Android 2.3 - no let/const/arrow functions/fetch
+var feedbackEl = document.getElementById('feedback');
+var statusDot = document.getElementById('statusDot');
+var statusText = document.getElementById('statusText');
+var feedbackTimer = null;
+var connected = false;
+
+function send(cmd, btn) {
+    // Visual feedback on button
+    if (btn) {
+        btn.className = btn.className + ' active';
+        setTimeout(function() {
+            btn.className = btn.className.replace(' active', '');
+        }, 200);
+    }
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/command/' + cmd, true);
+    xhr.timeout = 3000;
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                if (!connected) {
+                    connected = true;
+                    statusDot.className = 'status-dot';
+                    statusText.innerHTML = 'Connected';
+                }
+            } else {
+                connected = false;
+                statusDot.className = 'status-dot offline';
+                statusText.innerHTML = 'Connection lost';
+            }
+        }
+    };
+    xhr.onerror = function() {
+        connected = false;
+        statusDot.className = 'status-dot offline';
+        statusText.innerHTML = 'Connection lost';
+    };
+    xhr.send();
+}
+
+// Check connection on load
+function checkConnection() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/status', true);
+    xhr.timeout = 3000;
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                connected = true;
+                statusDot.className = 'status-dot';
+                statusText.innerHTML = 'Connected';
+            } else {
+                connected = false;
+                statusDot.className = 'status-dot offline';
+                statusText.innerHTML = 'Not connected';
+            }
+        }
+    };
+    xhr.onerror = function() {
+        connected = false;
+        statusDot.className = 'status-dot offline';
+        statusText.innerHTML = 'Not connected';
+    };
+    xhr.send();
+}
+
+// Prevent default touch behaviors (scrolling, zooming)
+document.body.ontouchmove = function(e) { e.preventDefault(); };
+
+// Initial connection check
+checkConnection();
+// Periodic check every 5 seconds
+setInterval(checkConnection, 5000);
+</script>
+</body>
+</html>

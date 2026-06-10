@@ -1,1 +1,28 @@
-
+{
+  "version": "1.0.0",
+  "app": "MiniPC Media Center",
+  "files": [
+    {"path": "main.py"},
+    {"path": "requirements.txt"},
+    {"path": "version.txt"},
+    {"path": "backend/__init__.py"},
+    {"path": "backend/media_scanner.py"},
+    {"path": "backend/remote_server.py"},
+    {"path": "backend/system_control.py"},
+    {"path": "backend/updater.py"},
+    {"path": "remote/index.html"},
+    {"path": "styles/__init__.py"},
+    {"path": "styles/theme.py"},
+    {"path": "ui/__init__.py"},
+    {"path": "ui/home_screen.py"},
+    {"path": "ui/main_window.py"},
+    {"path": "ui/movie_browser.py"},
+    {"path": "ui/movie_player.py"},
+    {"path": "ui/settings_screen.py"},
+    {"path": "ui/components/__init__.py"},
+    {"path": "ui/components/focus_card.py"},
+    {"path": "ui/components/nav_bar.py"},
+    {"path": "ui/components/slider_setting.py"},
+    {"path": "ui/components/toggle_setting.py"}
+  ]
+}

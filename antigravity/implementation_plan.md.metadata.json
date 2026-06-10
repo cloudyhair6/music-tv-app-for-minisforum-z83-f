@@ -1,0 +1,6 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
+  "summary":  "Detailed implementation plan for building a fullscreen Python TV/media center application similar to LibreELEC. Covers technology stack (PySide6 + Qt Quick/QML), architecture, media playback via python-vlc, system settings control (volume, brightness, Wi-Fi, Bluetooth, power), file scanning, and 10-foot UI design with keyboard/gamepad navigation. Includes file-by-file breakdown, dependency list, and verification plan.",
+  "updatedAt":  "2026-06-10T07:48:33.616181900Z",
+  "requestFeedback":  true
+}
